@@ -13,9 +13,9 @@ Client
         -Request body:
 
         {
-        "username": "string",
-        "password": "string",
-        "email": "string"
+            "username": "string",
+            "password": "string",
+            "email": "string"
         }
 
         -Responses:
@@ -37,15 +37,15 @@ Client
         -Request body:
 
         {
-        "account": "string", // email or username
-        "password": "string"
+            "account": "string", // email or username
+            "password": "string"
         }
 
         -Responses:
             200 - OK
 
         {
-        "token": "string" // uuid* || JWT || username
+            "token": "string" // uuid* || JWT || username
         }
 
             400 - Bad Request
@@ -60,8 +60,8 @@ Client
         -Request body:
 
          {
-         "message": "string",
-         "logType": 0
+            "message": "string",
+            "logType": 0
          }
 
         -Request headers:
