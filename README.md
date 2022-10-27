@@ -1,6 +1,8 @@
 ITBC-Logger
 
-Final project - ITBC Client
+Final project - ITBC 
+
+Client
 
     Register
 
