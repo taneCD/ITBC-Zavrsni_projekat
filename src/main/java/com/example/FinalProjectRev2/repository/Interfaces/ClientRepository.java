@@ -1,10 +1,13 @@
 package com.example.FinalProjectRev2.repository.Interfaces;
 
+import antlr.Token;
 import com.example.FinalProjectRev2.model.Authorization;
 import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,8 +21,12 @@ public interface ClientRepository {
 
     public String getUsernameFromToken(UUID token);
 
-    List<SearchLogs>searchLogs(SearchLogs srcLog, String username);
+    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType);
 
     //Admin
-    List<Client> getAllClients();
+    public List<Client> getAllClients();
+
+    public boolean getAdminFromUsername(String username);
+
+    public boolean changeClientPassword(Client client, UUID id);
 }

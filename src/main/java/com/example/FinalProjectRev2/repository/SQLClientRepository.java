@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class SQLClientRepository implements ClientRepository {
 
     @Override
     public boolean clientRegister(Client client) {
-        String query = "SELECT username, password, email FROM clients";
+        String query = "SELECT username, password, email, isAdmin FROM clients";
         List<Client> clients = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Client.class));
         boolean clientExist = false;
         for (var el : clients) {
@@ -30,13 +31,15 @@ public class SQLClientRepository implements ClientRepository {
             }
         }
         if (!clientExist) {
+            client.generateRandomId();
             clients.add(client);
-            jdbcTemplate.update("INSERT INTO clients (username, password, email) VALUES (?, ?, ?)", client.getUsername(), client.getPassword(), client.getEmail());
+            jdbcTemplate.update("INSERT INTO clients (id, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?)",client.getId(), client.getUsername(), client.getPassword(), client.getEmail(), client.isAdmin());
             System.out.println("Dodavanje u bazu uspesno!");
             return true;
         }
         return false;
     }
+
     @Override
     public Authorization clientLogin(Client client) {
         String query = "SELECT username, password, email FROM clients";
@@ -45,7 +48,7 @@ public class SQLClientRepository implements ClientRepository {
             if (el.getUsername().equals(client.getUsername()) && el.getPassword().equals(client.getPassword())) { // proveravamo da li u bazi imamo korisnika sa ovim username i password, ako ima moze da se uloguje
                 System.out.println("Login je moguc!");
                 UUID token = UUID.randomUUID();
-                jdbcTemplate.update("INSERT INTO tokens (token, username) VALUES (?, ?)",token, client.getUsername());
+                jdbcTemplate.update("INSERT INTO tokens (token, username) VALUES (?, ?)", token, client.getUsername());
                 var auth = new Authorization();
                 auth.token = token;
                 return auth;
@@ -67,12 +70,13 @@ public class SQLClientRepository implements ClientRepository {
 //            }
 //        }
 //        if (!logNesto) {
-            log.generateRandomId();
-            log.setCurrentDate();
-            jdbcTemplate.update("INSERT INTO log (id, username, message, logType, createdDate) VALUES (?, ?, ?, ?, ?)",log.getId(), username, log.getMessage(), log.getLogTypeInt(), log.getCreatedDate());
-            return true;
+        log.generateRandomId();
+        log.setCurrentDate();
 
+        jdbcTemplate.update("INSERT INTO log (id, username, message, logType, createdDate) VALUES (?, ?, ?, ?, ?)", log.getId(), username, log.getMessage(), log.getLogTypeInt(), log.getCreatedDate());
+        return true;
     }
+
     @Override
     public String getUsernameFromToken(UUID token) {
         String query = "SELECT username FROM tokens WHERE token=?";
@@ -89,26 +93,64 @@ public class SQLClientRepository implements ClientRepository {
             return null;
         }
     }
+    @Override
+    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType) {
+        //Query koji vraca listu svih trazenih logova
+//        List<Log> logovi = jdbcTemplate.query("SELECT id,message,logType,createdDate FROM log WHERE logType=? and message like '%?%' and createdDate >= ? and createdDate <= ? and username = ?", new Object[]{logType,message,dateFrom,dateTo,userName}, BeanPropertyRowMapper.newInstance(Log.class));
+//        return logovi;
 
-    @Override//????????????????????????????????????????????????????????????
-    public List<SearchLogs> searchLogs(SearchLogs srcLog, String username) {
-        String query = "SELECT message, logType FROM log WHERE event_date between dateFrom and dateTo";
-        List<SearchLogs> logs = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SearchLogs.class));
-//        jdbcTemplate.update("INSERT INTO log (message, logType) VALUES (?, ?)",srcLog.getMessage(), srcLog.getLogType());
+        List<Log> logovi = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType + " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo + "' and username = '" + userName + "'", BeanPropertyRowMapper.newInstance(Log.class));
+        System.out.println("Necu ovo");
+        return logovi;
 
-        return logs;
+
+//        List<Log>logzz=new ArrayList<>();
+//        for(var el: logzz){
+//            if(el.getMessage().contains(message) && el.getLogTypeInt()==logType && el.getCreatedDate().isAfter(dateFrom) && el.getCreatedDate().isBefore(dateTo)){
+//                System.out.println("Pronasao log");
+//                return logzz;
+////                String usernameL = "SELECT username FROM log WHERE username=?", username;
+//            }
+//        }
+//        System.out.println("Jbg nisam pronasao");
+//        return null;
+//        try {
+//            String message = jdbcTemplate.queryForObject(query, new Object[]{username}, String.class);
+////        List<SearchLogs> logs = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SearchLogs.class));
+////        jdbcTemplate.update("INSERT INTO log (message, logType) VALUES (?, ?)",srcLog.getMessage(), srcLog.getLogType());
+//
+//            return message;
+//        } catch (DataAccessException e) {
+//            return "greska";
+//        }
     }
-
-
-
-
 
 
     //Admin
     @Override
     public List<Client> getAllClients() {
-        String query = "SELECT username, email, logCount FROM clients";
+        String query = "SELECT username, email FROM clients ";
         List<Client> clients = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Client.class));
         return clients;
+    }
+    public boolean getAdminFromUsername(String username) {
+        String query = "SELECT isAdmin FROM clients WHERE username=?";
+        try {
+            int isTrue = jdbcTemplate.queryForObject(query, new Object[]{username}, Integer.class);
+            if(isTrue==1) {
+                return true;
+            }else{
+                return false;
+            }
+        } catch (DataAccessException e) {
+            return false;
+        }
+    }
+    @Override
+    public boolean changeClientPassword(Client client, UUID id) {
+        var username=getUsernameFromToken(id);
+        System.out.println("Ovde jos nista ne radim");
+        jdbcTemplate.update("UPDATE clients SET password=? WHERE id=?",client.getPassword(), id);
+        return true;
     }
 }

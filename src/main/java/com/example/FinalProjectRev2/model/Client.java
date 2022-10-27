@@ -9,6 +9,8 @@ public class Client {
     private String username;
     private String password;
     private String email;
+    private boolean isAdmin;
+    private UUID id;
 
     public Client() {
     }
@@ -18,6 +20,25 @@ public class Client {
         this.password = password;
         this.email = email;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void generateRandomId() {
+        this.id = UUID.randomUUID();
+    }
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
     public String getUsername() {
         return username;
     }

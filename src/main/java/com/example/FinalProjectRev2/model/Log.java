@@ -20,15 +20,12 @@ public class Log {
     public int getLogTypeInt(){
         return this.logType;
     }
-
-
     public Log(UUID id, String message, int logType, LocalDateTime createdDate) {
         this.id = id;
         this.message = message;
         this.logType = logType;
         this.createdDate = createdDate;
     }
-
     public void generateRandomId() {
         this.id= UUID.randomUUID();
     }

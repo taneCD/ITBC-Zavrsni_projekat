@@ -4,10 +4,15 @@ import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
 import com.example.FinalProjectRev2.repository.Interfaces.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -45,35 +50,85 @@ public class ClientController {
             return new ResponseEntity<>(authorization, HttpStatus.OK);
         }
     }
+
     @RequestMapping(path = "/api/logs/create", method = RequestMethod.POST)
     public ResponseEntity<String> createLog(@RequestHeader("Authorization") UUID token, @RequestBody Log log) {
         if (log.getLogType() == Log.LogType.UNKNOWN) {
 //            if (log.getLogType() != Log.LogType.ERROR && log.getLogType() != Log.LogType.WARNING && log.getLogType() != Log.LogType.INFO) {
-                return new ResponseEntity<String>("Incorrect logType", HttpStatus.BAD_REQUEST);
-            }
-            if (log.getMessage().length() > 1024) {
-                return new ResponseEntity<String>("Message should be less than 1024", HttpStatus.PAYLOAD_TOO_LARGE);
-            }
-            String username = clientRepository.getUsernameFromToken(token);
-//        System.out.println(username+" Testiranje");
-            if (username == null) {
-                return new ResponseEntity<String>("Incorrect token", HttpStatus.UNAUTHORIZED);
-            }
-            clientRepository.createLog(log, username);
-//        return new ResponseEntity<String>(token, HttpStatus.CREATED);
-            return new ResponseEntity<>("Sve ok", HttpStatus.OK);
+            return new ResponseEntity<String>("Incorrect logType", HttpStatus.BAD_REQUEST);
         }
+        if (log.getMessage().length() > 1024) {
+            return new ResponseEntity<String>("Message should be less than 1024", HttpStatus.PAYLOAD_TOO_LARGE);
+        }
+        String username = clientRepository.getUsernameFromToken(token);
+//        System.out.println(username+" Testiranje");
+        if (username == null) {
+            return new ResponseEntity<String>("Incorrect token", HttpStatus.UNAUTHORIZED);
+        }
+        clientRepository.createLog(log, username);
+//        return new ResponseEntity<String>(token, HttpStatus.CREATED);
+        return new ResponseEntity<>("Sve ok", HttpStatus.OK);
+    }
 
     @RequestMapping(path = "/api/logs/search", method = RequestMethod.GET)
-    public ResponseEntity<String> searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam() ){
-//        if(srcLog.getDateFrom()==)
-//        clientRepository.searchLogs(srcLog,  );
-        return new ResponseEntity<String>("Sve ok", HttpStatus.OK);
+    public ResponseEntity<List<Log>> searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom, @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
 
-        if () {
-            return new ResponseEntity<String>("Invalid dates or invalid logType", HttpStatus.BAD_REQUEST);
-            if ()
-                return new ResponseEntity<String>("Incorrect token", HttpStatus.UNAUTHORIZED);
+        try {
+            LocalDate realDateFrom = LocalDate.parse(dateFrom);
+            LocalDate realDateTo = LocalDate.parse(dateTo);
+            if (realDateFrom.isAfter(realDateTo)) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        if (!logType.equals("0") && !logType.equals("1") && !logType.equals("2")) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        String username = clientRepository.getUsernameFromToken(token);
+        if (username == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        var result = clientRepository.searchLogs(username, message, LocalDate.parse(dateFrom), LocalDate.parse(dateTo), Integer.parseInt(logType));
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/api/clients", method = RequestMethod.GET)
+    public ResponseEntity<List<Client>> getAllClients(@RequestHeader("Authorization") UUID token) {
+//        String query = "SELECT username FROM tokens WHERE token=?";
+
+        String username = clientRepository.getUsernameFromToken(token);
+
+        if (username == null) {
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
+        boolean isAdmin = clientRepository.getAdminFromUsername(username);
+        if (!isAdmin) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        var result = clientRepository.getAllClients();
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
+    @RequestMapping(path = "/api/clients/{id}/reset-password", method = RequestMethod.PATCH)
+    public ResponseEntity<Client> changeClientPassword(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id) {
+        String username = clientRepository.getUsernameFromToken(token);
+
+
+        if (username == null) {
+            System.out.println("Username je null "+token);
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
+        boolean isAdmin = clientRepository.getAdminFromUsername(username);
+        if (!isAdmin) {
+            System.out.println("Username je null "+token);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        boolean clientpass=clientRepository.changeClientPassword(client, id);
+        if (clientpass) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+        System.out.println("Nista nije proslo");
+        return null;
     }
+}
