@@ -1,5 +1,3 @@
-# ITBC-Zavrsni_projekat **Logger**
-
 Client
 1. Register
 HTTP Method: POST
@@ -111,4 +109,4 @@ Responses:
 401 - Unauthorized
 Correct token, but not admin
 403 - Forbidden
-Incorrect token
+Incorrect toke
