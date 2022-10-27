@@ -1,5 +1,4 @@
 package com.example.FinalProjectRev2.model;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 

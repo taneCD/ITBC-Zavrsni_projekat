@@ -4,15 +4,11 @@ import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
 import com.example.FinalProjectRev2.repository.Interfaces.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -40,7 +36,6 @@ public class ClientController {
             }
         }
     }
-
     @RequestMapping(path = "/api/clients/login", method = RequestMethod.POST)
     public ResponseEntity<Authorization> clientLogin(@RequestBody Client client) {
         Authorization authorization = clientRepository.clientLogin(client);
@@ -50,7 +45,6 @@ public class ClientController {
             return new ResponseEntity<>(authorization, HttpStatus.OK);
         }
     }
-
     @RequestMapping(path = "/api/logs/create", method = RequestMethod.POST)
     public ResponseEntity<String> createLog(@RequestHeader("Authorization") UUID token, @RequestBody Log log) {
         if (log.getLogType() == Log.LogType.UNKNOWN) {
@@ -113,7 +107,6 @@ public class ClientController {
     @RequestMapping(path = "/api/clients/{id}/reset-password", method = RequestMethod.PATCH)
     public ResponseEntity<Client> changeClientPassword(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id) {
         String username = clientRepository.getUsernameFromToken(token);
-
 
         if (username == null) {
             System.out.println("Username je null "+token);

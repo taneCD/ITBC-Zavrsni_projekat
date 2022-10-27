@@ -1,13 +1,9 @@
 package com.example.FinalProjectRev2.repository.Interfaces;
-
-import antlr.Token;
 import com.example.FinalProjectRev2.model.Authorization;
 import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
