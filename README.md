@@ -4,13 +4,13 @@ Final project - ITBC
 
 Client
 
-    Register
+    1. Register
 
-        HTTP Method: POST
+        -HTTP Method: POST
 
-        Endpoint URL: /api/clients/register
+        -Endpoint URL: /api/clients/register
 
-        Request body:
+        -Request body:
 
         {
         "username": "string",
@@ -18,7 +18,7 @@ Client
         "email": "string"
         }
 
-        Responses:
+        -Responses:
             201 - Registered
             400 - Bad Request
                 email must be valid
@@ -28,20 +28,20 @@ Client
                 username already exists
                 email already exists
 
-    Login
+    2. Login
 
-        HTTP Method: POST
+        -HTTP Method: POST
 
-        Endpoint URL: /api/clients/login
+        -Endpoint URL: /api/clients/login
 
-        Request body:
+        -Request body:
 
         {
         "account": "string", // email or username
         "password": "string"
         }
 
-        Responses:
+        -Responses:
             200 - OK
 
         {
@@ -51,16 +51,22 @@ Client
             400 - Bad Request
                 Email/Username or password incorrect
 
-    Create log * HTTP Method: POST * Endpoint URL: /api/logs/create * Request body:
+    3. Create log 
+        
+        -HTTP Method: POST 
+        
+        -Endpoint URL: /api/logs/create 
+        
+        -Request body:
 
          {
          "message": "string",
          "logType": 0
          }
 
-        Request headers:
+        -Request headers:
             Authorization - token
-        Responses:
+        -Responses:
             201 - Created
             400 - Bad Request
                 Incorrect logType
@@ -69,26 +75,30 @@ Client
             413 - Payload too large
                 Message should be less than 1024
 
-    Search logs
-        HTTP Method: GET
-        Endpoint URL: /api/logs/search
-        Request params:
+    4. Search logs
+        -HTTP Method: GET
+        
+        -Endpoint URL: /api/logs/search
+        
+        -Request params:
             dateFrom - date
             dateTo - date
             message - string
             logType - int
-        Request headers:
+            
+        -Request headers:
             Authorization - token
-        Responses:
+            
+        -Responses:
 
             200 - OK
 
             [
-            {
-            "message": "string",
-            "logType": 0,
-            "createdDate": "date"
-            }
+                {
+                "message": "string",
+                "logType": 0,
+                "createdDate": "date"
+                }
             ]
 
             400 - Bad request
@@ -100,22 +110,22 @@ Client
 
 Admin
 
-    Get all clients
-        HTTP Method: GET
-        Endpoint URL: /api/clients
-        Request headers:
+    1. Get all clients
+        -HTTP Method: GET
+        -Endpoint URL: /api/clients
+        -Request headers:
             Authorization - token (Admin token)
-        Responses:
+        -Responses:
 
             200 - OK
 
             [
-            {
-            "id": "uuid",
-            "username": "string",
-            "email": "string",
-            "logCount": 0
-            }
+               {
+                "id": "uuid",
+                "username": "string",
+                "email": "string",
+                "logCount": 0
+               }
             ]
 
             401 - Unauthorized
@@ -123,22 +133,23 @@ Admin
 
             403 - Forbidden
                 Incorrect token
-    Change client password
+                
+    2.Change client password
 
-        HTTP Method: PATCH
+        -HTTP Method: PATCH
 
-        Endpoint URL: /api/clients/{clientId}/reset-password
+        -Endpoint URL: /api/clients/{clientId}/reset-password
 
-        Request body:
+        -Request body:
 
           {
-          "password": "string"
+              "password": "string"
           }
 
-        Request headers:
+        -Request headers:
             Authorization - token (Admin token)
 
-        Responses:
+        -Responses:
             204 - No content
             401 - Unauthorized
                 Correct token, but not admin
