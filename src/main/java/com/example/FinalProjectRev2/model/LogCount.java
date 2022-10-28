@@ -6,12 +6,10 @@ public class LogCount {
 
     public LogCount() {
     }
-
     public LogCount(int totalLogs, String username) {
         TotalLogs = totalLogs;
         this.username = username;
     }
-
     public int getTotalLogs() {
         return TotalLogs;
     }
@@ -23,7 +21,6 @@ public class LogCount {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
