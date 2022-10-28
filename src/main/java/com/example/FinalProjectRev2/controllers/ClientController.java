@@ -48,19 +48,16 @@ public class ClientController {
     @RequestMapping(path = "/api/logs/create", method = RequestMethod.POST)
     public ResponseEntity<String> createLog(@RequestHeader("Authorization") UUID token, @RequestBody Log log) {
         if (log.getLogType() == Log.LogType.UNKNOWN) {
-//            if (log.getLogType() != Log.LogType.ERROR && log.getLogType() != Log.LogType.WARNING && log.getLogType() != Log.LogType.INFO) {
             return new ResponseEntity<String>("Incorrect logType", HttpStatus.BAD_REQUEST);
         }
         if (log.getMessage().length() > 1024) {
             return new ResponseEntity<String>("Message should be less than 1024", HttpStatus.PAYLOAD_TOO_LARGE);
         }
         String username = clientRepository.getUsernameFromToken(token);
-//        System.out.println(username+" Testiranje");
         if (username == null) {
             return new ResponseEntity<String>("Incorrect token", HttpStatus.UNAUTHORIZED);
         }
         clientRepository.createLog(log, username);
-//        return new ResponseEntity<String>(token, HttpStatus.CREATED);
         return new ResponseEntity<>("Sve ok", HttpStatus.OK);
     }
 
@@ -89,7 +86,6 @@ public class ClientController {
 
     @RequestMapping(path = "/api/clients", method = RequestMethod.GET)
     public ResponseEntity<List<Client>> getAllClients(@RequestHeader("Authorization") UUID token) {
-//        String query = "SELECT username FROM tokens WHERE token=?";
 
         String username = clientRepository.getUsernameFromToken(token);
 
