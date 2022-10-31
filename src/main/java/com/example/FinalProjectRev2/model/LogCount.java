@@ -13,11 +13,9 @@ public class LogCount {
     public int getTotalLogs() {
         return TotalLogs;
     }
-
     public void setTotalLogs(int totalLogs) {
         TotalLogs = totalLogs;
     }
-
     public String getUsername() {
         return username;
     }

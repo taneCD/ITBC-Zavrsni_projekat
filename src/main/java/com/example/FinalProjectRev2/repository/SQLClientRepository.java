@@ -33,7 +33,7 @@ public class SQLClientRepository implements ClientRepository {
         if (!clientExist) { // ako klijent ne postoji u bazi, ubacujemo ga
             client.generateRandomId();
             clients.add(client);
-            jdbcTemplate.update("INSERT INTO clients (id, username, password, email, isAdmin) VALUES (?, ?, ?, ?, ?)",client.getId(), client.getUsername(), client.getPassword(), client.getEmail(), client.isAdmin());
+            jdbcTemplate.update("INSERT INTO clients (id, username, password, email, isAdmin, clientType) VALUES (?, ?, ?, ?, ?, ?)",client.getId(), client.getUsername(), client.getPassword(), client.getEmail(), client.isAdmin(), client.getclientTypeInt());
             System.out.println("Dodavanje u bazu uspesno!");
             return true;
         }
@@ -44,7 +44,7 @@ public class SQLClientRepository implements ClientRepository {
         String query = "SELECT username, password, email FROM clients";
         List<Client> clients = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Client.class));
         for (var el : clients) {
-            if (el.getUsername().equals(client.getUsername()) && el.getPassword().equals(client.getPassword())) { // proveravamo da li u bazi imamo registrovanog korisnika sa ovim username i password, ako ima moze da se uloguje
+            if (el.getUsername().equals(client.getUsername()) && el.getPassword().equals(client.getPassword())) { // proveravamo da li u bazi imamo registrovanog korisnika sa ovim username i password, ako ima moze, da se uloguje
                 System.out.println("Login je moguc!");
                 UUID token = UUID.randomUUID();
                 jdbcTemplate.update("INSERT INTO tokens (token, username) VALUES (?, ?)", token, client.getUsername());

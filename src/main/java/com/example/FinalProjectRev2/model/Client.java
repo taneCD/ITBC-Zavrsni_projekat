@@ -8,16 +8,32 @@ public class Client {
     private String email;
     private boolean isAdmin;
     private UUID id;
-
     private int logCount;
+    private int clientType;
+
+    public enum ClientType{
+        FREE,
+        REGULAR,
+        PREMIUM,
+        UNKNOWN
+    }
+    public int getclientTypeInt(){
+        return this.clientType;
+    }
+
+    public void setClientType(int clientType) {
+        this.clientType = clientType;
+    }
 
     public Client() {
     }
-    public Client(String username, String password, String email) {
+    public Client(String username, String password, String email, int clientType) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.clientType=clientType;
     }
+
     public int getLogCount() {
         return logCount;
     }
@@ -57,6 +73,19 @@ public class Client {
     public void setEmail(String email) {
         this.email = email;
     }
+    public Client.ClientType getClientType() {
+        if (clientType == 0) {
+            return ClientType.FREE;
+        } else if (clientType == 1) {
+            return ClientType.REGULAR;
+        } else if (clientType == 2) {
+            return ClientType.PREMIUM;
+        }else {
+            return null;
+        }
+
+    }
+
     @Override
     public String toString() {
         return "Client{" +

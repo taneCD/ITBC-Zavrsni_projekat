@@ -24,7 +24,7 @@ public class ClientController {
     @RequestMapping(path = "/api/clients/register", method = RequestMethod.POST)
     public ResponseEntity<Boolean> clientRegister(@RequestBody Client client) {
         if (client.getUsername().length() < 3 || !client.getEmail().contains("@") || !client.getEmail().contains(".")
-                || client.getPassword().length() < 8 || !client.getPassword().matches(".*[0-9].*") || !client.getPassword().matches(".*[A-Z].*")) {
+                || client.getPassword().length() < 8 || !client.getPassword().matches(".*[0-9].*") || !client.getPassword().matches(".*[A-Z].*") || client.getclientTypeInt()>2) {
             System.out.println("Username must be longer then 3 characters and e-mail and pass must be valid! Pass at least one num and one uppercase letter");
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         } else {
@@ -98,7 +98,6 @@ public class ClientController {
         }
         var result = clientRepository.getAllClients();
         return new ResponseEntity<>(result, HttpStatus.OK);
-
     }
     @RequestMapping(path = "/api/clients/{id}/reset-password", method = RequestMethod.PATCH)
     public ResponseEntity<Client> changeClientPassword(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id) {
