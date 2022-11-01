@@ -10,9 +10,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,39 +85,41 @@ public class SQLClientRepository implements ClientRepository {
             return null;
         }
     }
-    public Client getClientFromUsername(String username) {
-        String query = "SELECT * FROM clients";
-        try {
-            Client client = jdbcTemplate.queryForObject(query, new Object[]{username}, Client.class);
-                return client;
 
+    public int getClientFromUsername(String username) {
+        String query = "SELECT * FROM clients WHERE username=?";
+        try {
+            int client = jdbcTemplate.queryForObject(query, new Object[]{username}, Integer.class);
+            System.out.println("moze");
+            return client;
         } catch (DataAccessException e) {
-            return null;
+            System.out.println("greskaa");
+            return -1;
         }
     }
     @Override
-    public List<Log>searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType) {
+    public List<Log>searchLogs(String username, String message, LocalDate dateFrom, LocalDate dateTo, int logType) {
         //Query koji vraca listu svih trazenih logova
         LocalDate currentDate = LocalDate.now();
         LocalDate returnValue = currentDate.minusDays(7);
         LocalDate returnValueYear=currentDate.minusDays(365);
-        Client client = getClientFromUsername(userName);
+        int clientType = getClientFromUsername(username);
 
-        if (client.getclientTypeInt()==1) {
-            List<Log> logovi1 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM (SELECT TOP 16 * FROM log) WHERE logType=" + logType +
+        if (clientType==0) {
+            List<Log> logovi1 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
                     " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo +
-                    "' and username = '" + userName + "'and createdDate >= '" + returnValue + "'", BeanPropertyRowMapper.newInstance(Log.class));
+                    "' and username = '" + username + "'and createdDate >= '" + returnValue + "' and id in (SELECT TOP 16 id FROM log ORDER BY createdDate DESC)", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi1;
 
-        } else if (client.getclientTypeInt() == 1) {
-            List<Log> logovi2 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM (SELECT TOP 65536 * FROM log) WHERE logType=" + logType +
+        } else if (clientType== 1) {
+            List<Log> logovi2 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
                     " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo +
-                    "' and username = '" + userName + "'and createdDate >= '" + returnValueYear + "'", BeanPropertyRowMapper.newInstance(Log.class));
+                    "' and username = '" + username + "'and createdDate >= '" + returnValueYear + "' and id in (SELECT TOP 65536 id FROM log ORDER BY createdDate DESC)", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi2;
-        } else if (client.getclientTypeInt() == 2) { // ovo je ok premium user sve vidi
+        } else if (clientType== 2) { // ovo je ok premium user sve vidi
             List<Log> logovi3 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
                     " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo +
-                    "' and username = '" + userName + "'", BeanPropertyRowMapper.newInstance(Log.class));
+                    "' and username = '" + username + "'", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi3;
         }
         return null;
