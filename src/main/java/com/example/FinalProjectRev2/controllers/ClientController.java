@@ -2,6 +2,7 @@ package com.example.FinalProjectRev2.controllers;
 import com.example.FinalProjectRev2.model.Authorization;
 import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
+import com.example.FinalProjectRev2.model.LogCount;
 import com.example.FinalProjectRev2.repository.Interfaces.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class ClientController {
         }
     }
     @RequestMapping(path = "/api/clients/login", method = RequestMethod.POST)
-    public ResponseEntity<Authorization> clientLogin(@RequestBody Client client) {
+    public ResponseEntity<Authorization>clientLogin(@RequestBody Client client) {
         Authorization authorization = clientRepository.clientLogin(client);
         if (authorization == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -46,7 +47,7 @@ public class ClientController {
         }
     }
     @RequestMapping(path = "/api/logs/create", method = RequestMethod.POST)
-    public ResponseEntity<String> createLog(@RequestHeader("Authorization") UUID token, @RequestBody Log log) {
+    public ResponseEntity<String>createLog(@RequestHeader("Authorization") UUID token, @RequestBody Log log) {
         if (log.getLogType() == Log.LogType.UNKNOWN) {
             return new ResponseEntity<String>("Incorrect logType", HttpStatus.BAD_REQUEST);
         }
@@ -62,8 +63,7 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/api/logs/search", method = RequestMethod.GET)
-    public ResponseEntity<List<Log>> searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom, @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
-
+    public ResponseEntity<List<Log>>searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom, @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
         try {
             LocalDate realDateFrom = LocalDate.parse(dateFrom);
             LocalDate realDateTo = LocalDate.parse(dateTo);
@@ -86,7 +86,6 @@ public class ClientController {
 
     @RequestMapping(path = "/api/clients", method = RequestMethod.GET)
     public ResponseEntity<List<Client>> getAllClients(@RequestHeader("Authorization") UUID token) {
-
         String username = clientRepository.getUsernameFromToken(token);
 
         if (username == null) {
@@ -100,23 +99,50 @@ public class ClientController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @RequestMapping(path = "/api/clients/{id}/reset-password", method = RequestMethod.PATCH)
-    public ResponseEntity<Client> changeClientPassword(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id) {
-        String username = clientRepository.getUsernameFromToken(token);
+    public ResponseEntity<Client>changeClientPassword(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id){
 
-        if (username == null) {
-            System.out.println("Username je null "+token);
+        String usernameById=clientRepository.getUsernameFromID(id);
+        if (usernameById == null) {
+            System.out.println("Non existing id! " +id);
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         }
+        String username = clientRepository.getUsernameFromToken(token);
         boolean isAdmin = clientRepository.getAdminFromUsername(username);
         if (!isAdmin) {
-            System.out.println("Username je null "+token);
+            System.out.println("You are not admin! "+token);
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
         boolean clientpass=clientRepository.changeClientPassword(client, id);
         if (clientpass) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
-        System.out.println("Nista nije proslo");
+        return null;
+    }
+    @RequestMapping(path="/api/clients/{id}/clientType", method = RequestMethod.PATCH)
+    public ResponseEntity<Client>changeClientType(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id){
+
+        if(client.getclientTypeInt()==0){
+
+        }
+
+        if (client.getclientTypeInt()!=0 && client.getclientTypeInt()!=1 && client.getclientTypeInt()!=2) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        String usernameById=clientRepository.getUsernameFromID(id);
+        if (usernameById == null) {
+            System.out.println("Non existing id! "+id);
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        }
+        String username = clientRepository.getUsernameFromToken(token);
+        boolean isAdmin = clientRepository.getAdminFromUsername(username);
+        if (!isAdmin) {
+            System.out.println("You are not admin! "+token);
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        boolean clientType=clientRepository.changeClientType(client, id);
+        if (clientType) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
         return null;
     }
 }

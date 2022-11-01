@@ -15,7 +15,6 @@ public class Client {
         FREE,
         REGULAR,
         PREMIUM,
-        UNKNOWN
     }
     public int getclientTypeInt(){
         return this.clientType;
@@ -24,7 +23,6 @@ public class Client {
     public void setClientType(int clientType) {
         this.clientType = clientType;
     }
-
     public Client() {
     }
     public Client(String username, String password, String email, int clientType) {
@@ -33,7 +31,6 @@ public class Client {
         this.email = email;
         this.clientType=clientType;
     }
-
     public int getLogCount() {
         return logCount;
     }
@@ -83,7 +80,6 @@ public class Client {
         }else {
             return null;
         }
-
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.FinalProjectRev2.repository.Interfaces;
 import com.example.FinalProjectRev2.model.Authorization;
 import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
+import com.example.FinalProjectRev2.model.LogCount;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +18,9 @@ public interface ClientRepository {
 
     public String getUsernameFromToken(UUID token);
 
-    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType);
+    public String getUsernameFromID(UUID id);
+
+    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType, Client client);
 
     //Admin
     public List<Client> getAllClients();
@@ -25,4 +28,5 @@ public interface ClientRepository {
     public boolean getAdminFromUsername(String username);
 
     public boolean changeClientPassword(Client client, UUID id);
+    public boolean changeClientType(Client client, UUID id);
 }

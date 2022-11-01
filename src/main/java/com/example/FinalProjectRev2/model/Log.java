@@ -62,5 +62,4 @@ public class Log {
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
-
 }
