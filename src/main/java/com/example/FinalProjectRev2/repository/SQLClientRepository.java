@@ -88,12 +88,23 @@ public class SQLClientRepository implements ClientRepository {
             return null;
         }
     }
+    public Client getClientFromUsername(String username) {
+        String query = "SELECT * FROM clients";
+        try {
+            Client client = jdbcTemplate.queryForObject(query, new Object[]{username}, Client.class);
+                return client;
+
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
     @Override
     public List<Log>searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType) {
         //Query koji vraca listu svih trazenih logova
         LocalDate currentDate = LocalDate.now();
         LocalDate returnValue = currentDate.minusDays(7);
         LocalDate returnValueYear=currentDate.minusDays(365);
+        Client client = getClientFromUsername(userName);
 
         if (client.getclientTypeInt()==1) {
             List<Log> logovi1 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM (SELECT TOP 16 * FROM log) WHERE logType=" + logType +
