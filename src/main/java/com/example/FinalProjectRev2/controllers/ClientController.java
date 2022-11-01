@@ -63,7 +63,8 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/api/logs/search", method = RequestMethod.GET)
-    public ResponseEntity<List<Log>>searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom, @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
+    public ResponseEntity<List<Log>>searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom,
+                                               @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
         try {
             LocalDate realDateFrom = LocalDate.parse(dateFrom);
             LocalDate realDateTo = LocalDate.parse(dateTo);
@@ -80,7 +81,7 @@ public class ClientController {
         if (username == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        var result = clientRepository.searchLogs(username, message, LocalDate.parse(dateFrom), LocalDate.parse(dateTo), Integer.parseInt(logType));
+        var result = clientRepository.searchLogs(username, message, LocalDate.parse(dateFrom), LocalDate.parse(dateTo), Integer.parseInt(logType) );
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -120,10 +121,6 @@ public class ClientController {
     }
     @RequestMapping(path="/api/clients/{id}/clientType", method = RequestMethod.PATCH)
     public ResponseEntity<Client>changeClientType(@RequestHeader("Authorization") UUID token, @RequestBody Client client, @PathVariable UUID id){
-
-        if(client.getclientTypeInt()==0){
-
-        }
 
         if (client.getclientTypeInt()!=0 && client.getclientTypeInt()!=1 && client.getclientTypeInt()!=2) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

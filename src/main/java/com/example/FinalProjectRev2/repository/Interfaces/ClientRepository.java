@@ -20,7 +20,7 @@ public interface ClientRepository {
 
     public String getUsernameFromID(UUID id);
 
-    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType, Client client);
+    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType);
 
     //Admin
     public List<Client> getAllClients();

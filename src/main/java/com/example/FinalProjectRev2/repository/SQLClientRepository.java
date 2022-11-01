@@ -89,21 +89,22 @@ public class SQLClientRepository implements ClientRepository {
         }
     }
     @Override
-    public List<Log>searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType, Client client) {
+    public List<Log>searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType) {
         //Query koji vraca listu svih trazenih logova
         LocalDate currentDate = LocalDate.now();
         LocalDate returnValue = currentDate.minusDays(7);
+        LocalDate returnValueYear=currentDate.minusDays(365);
 
-        if (client.getclientTypeInt() == 0) {
-            List<Log> logovi1 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
+        if (client.getclientTypeInt()==1) {
+            List<Log> logovi1 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM (SELECT TOP 16 * FROM log) WHERE logType=" + logType +
                     " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo +
                     "' and username = '" + userName + "'and createdDate >= '" + returnValue + "'", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi1;
 
         } else if (client.getclientTypeInt() == 1) {
-            List<Log> logovi2 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
+            List<Log> logovi2 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM (SELECT TOP 65536 * FROM log) WHERE logType=" + logType +
                     " and message like '%" + message + "%' and createdDate >= '" + dateFrom + "' and createdDate <= '" + dateTo +
-                    "' and username = '" + userName + "'", BeanPropertyRowMapper.newInstance(Log.class));
+                    "' and username = '" + userName + "'and createdDate >= '" + returnValueYear + "'", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi2;
         } else if (client.getclientTypeInt() == 2) { // ovo je ok premium user sve vidi
             List<Log> logovi3 = jdbcTemplate.query("SELECT id, message,logType,createdDate FROM log WHERE logType=" + logType +
@@ -111,6 +112,7 @@ public class SQLClientRepository implements ClientRepository {
                     "' and username = '" + userName + "'", BeanPropertyRowMapper.newInstance(Log.class));
             return logovi3;
         }
+        return null;
     }
     //Admin
     @Override

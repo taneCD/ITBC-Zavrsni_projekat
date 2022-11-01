@@ -9,7 +9,7 @@ public class Client {
     private boolean isAdmin;
     private UUID id;
     private int logCount;
-    private int clientType;
+    public int clientType;
 
     public enum ClientType{
         FREE,
