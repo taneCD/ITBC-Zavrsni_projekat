@@ -81,7 +81,6 @@ public class Client {
             return null;
         }
     }
-
     @Override
     public String toString() {
         return "Client{" +

@@ -62,4 +62,14 @@ public class Log {
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
+
+    @Override
+    public String toString() {
+        return "Log{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", logType=" + logType +
+                ", createdDate=" + createdDate +
+                '}';
+    }
 }

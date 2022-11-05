@@ -1,8 +1,5 @@
 package com.example.FinalProjectRev2.controllers;
-import com.example.FinalProjectRev2.model.Authorization;
-import com.example.FinalProjectRev2.model.Client;
-import com.example.FinalProjectRev2.model.Log;
-import com.example.FinalProjectRev2.model.LogCount;
+import com.example.FinalProjectRev2.model.*;
 import com.example.FinalProjectRev2.repository.Interfaces.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,8 +60,8 @@ public class ClientController {
     }
 
     @RequestMapping(path = "/api/logs/search", method = RequestMethod.GET)
-    public ResponseEntity<List<Log>>searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom,
-                                               @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
+    public ResponseEntity<List<LogSearchReturn>>searchLogs(@RequestHeader("Authorization") UUID token, @RequestParam("dateFrom") String dateFrom,
+                                                           @RequestParam("dateTo") String dateTo, @RequestParam("message") String message, @RequestParam("logType") String logType) {
         try {
             LocalDate realDateFrom = LocalDate.parse(dateFrom);
             LocalDate realDateTo = LocalDate.parse(dateTo);
@@ -81,7 +78,7 @@ public class ClientController {
         if (username == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
-        var result = clientRepository.searchLogs(username, message, LocalDate.parse(dateFrom), LocalDate.parse(dateTo), Integer.parseInt(logType) );
+        var result = clientRepository.searchLogs(username, message, LocalDate.parse(dateFrom), LocalDate.parse(dateTo), Integer.parseInt(logType));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

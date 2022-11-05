@@ -2,7 +2,7 @@ package com.example.FinalProjectRev2.repository.Interfaces;
 import com.example.FinalProjectRev2.model.Authorization;
 import com.example.FinalProjectRev2.model.Client;
 import com.example.FinalProjectRev2.model.Log;
-import com.example.FinalProjectRev2.model.LogCount;
+import com.example.FinalProjectRev2.model.LogSearchReturn;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +20,7 @@ public interface ClientRepository {
 
     public String getUsernameFromID(UUID id);
 
-    public List<Log> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType);
+    public List<LogSearchReturn> searchLogs(String userName, String message, LocalDate dateFrom, LocalDate dateTo, int logType);
 
     //Admin
     public List<Client> getAllClients();
