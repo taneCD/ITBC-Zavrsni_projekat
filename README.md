@@ -132,3 +132,19 @@
             - Correct token, but not admin
         - 403 - Forbidden
             - Incorrect token
+            
+   ______________________________________________________________________________         
+            
+Technologies:
+
+IntelliJ IDEA 2022.1.4
+
+Java oracle 19,
+
+Microsoft SQL Server Managment studio 18,
+
+Spring Boot (2.7.5),
+
+API testing: Postman v10
+
+Code by: Nebojša Tanasković
